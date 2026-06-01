@@ -1,0 +1,32 @@
+void lerHCSR04(){
+  const float velocidadeSom = 0.017;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  unsigned long tempo = pulseIn(ECHO_PIN, HIGH, 10000);
+
+  if(tempo == 0){
+    erroHCSR04 = true;
+  }
+  else{
+    distancia = tempo * velocidadeSom;
+    dados.nivelTanque = constrain(((alturaTanque - distancia)*100) / alturaTanque, 0, 100);
+    erroHCSR04 = false;
+  }
+}
+
+void lerDHT(){
+  dados.temperatura = dht.readTemperature();
+  dados.umidade = dht.readHumidity();
+
+  if(isnan(dados.temperatura) || isnan(dados.umidade)){
+    erroDHT = true;
+  }
+  else{
+    erroDHT = false;
+  }
+}
