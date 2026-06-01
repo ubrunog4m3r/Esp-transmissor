@@ -1,0 +1,70 @@
+#include <WiFi.h>
+#include <esp_now.h>
+#include <DHT.h>
+
+const uint8_t macReceptor[] = {0xB4, 0xBF, 0xE9, 0x32, 0xDF, 0xE4};
+
+#define TRIG_PIN 26
+#define ECHO_PIN 27
+#define LDR_PIN 36
+#define PIR_PIN 22
+#define LED_VERDE 18
+#define LED_VERMELHO 19
+#define DHT_PIN 23
+#define DHT_TYPE DHT22
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+typedef struct{
+  float nivelTanque = 0;
+  float temperatura = 0;
+  float umidade = 0;
+  uint16_t luminosidade = 0;
+  bool presencaDetectada = false;
+} DadosSensor;
+
+DadosSensor dados;
+
+float distancia;
+float alturaTanque = 100;
+
+bool erroDHT = false;
+bool erroHCSR04 =false;
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(LDR_PIN, INPUT);
+  pinMode(PIR_PIN, INPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_VERMELHO, OUTPUT);
+
+  definirCapacidade();
+
+  setupEspNow();
+  
+  dht.begin();
+}
+
+void loop() {
+  const unsigned long intervaloLoop = 2000;
+  static unsigned long tempoLoop = 0;
+
+  if(millis() - tempoLoop >= intervaloLoop){
+    tempoLoop = millis();
+
+    LEDs();
+    lerDHT();
+    lerHCSR04();
+    dados.luminosidade = analogRead(LDR_PIN);
+    dados.presencaDetectada = digitalRead(PIR_PIN);
+
+    bool erroSensores = erroDHT || erroHCSR04;
+    if(!erroSensores){
+      enviarDados();
+    }
+    monitorSerial();
+  }
+}
