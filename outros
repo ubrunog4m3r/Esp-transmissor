@@ -1,0 +1,40 @@
+void definirCapacidade(){
+  const uint8_t amostras = 10;
+  float soma = 0;
+  for(int i = 0; i < amostras; i++){
+    lerHCSR04();
+    if(erroHCSR04){
+      i--;
+    }
+    else{
+      soma += distancia;
+    }
+  }
+  alturaTanque = soma / amostras;
+}
+
+void monitorSerial(){
+  if(erroHCSR04){
+    Serial.println("Erro ao ler HCSR04");
+  }
+  else{
+    Serial.print("Nivel de tinta: ");
+    Serial.print(dados.nivelTanque);
+    Serial.println(" %");
+  }
+  if(erroDHT){
+    Serial.println("Erro ao ler DHT");
+  }
+  else{
+    Serial.print("Temperatura: ");
+    Serial.print(dados.temperatura);
+    Serial.println(" °C");
+    Serial.print("Umidade: ");
+    Serial.print(dados.umidade);
+    Serial.println(" %");
+  }
+  Serial.print("Luminosidade: ");
+  Serial.println(dados.luminosidade);
+  Serial.print("Presenca: ");
+  Serial.println(dados.presencaDetectada ? "DETECTADA\n" : "Não detectada\n");
+}
