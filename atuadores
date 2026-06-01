@@ -1,0 +1,6 @@
+void LEDs(){
+  bool nivelTanqueNormal;
+  nivelTanqueNormal = dados.nivelTanque < 75;
+  digitalWrite(LED_VERDE, nivelTanqueNormal);
+  digitalWrite(LED_VERMELHO, !nivelTanqueNormal);
+}
