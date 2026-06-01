@@ -41,8 +41,6 @@ void setup() {
   pinMode(LED_VERDE, OUTPUT);
   pinMode(LED_VERMELHO, OUTPUT);
 
-  definirCapacidade();
-
   setupEspNow();
   
   dht.begin();
